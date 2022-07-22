@@ -15,13 +15,13 @@ class Category(models.Model):
 
 
 class Ad(models.Model):
-    name = models.CharField(max_length=200, null=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=200)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
-    description = models.TextField(max_length=1000, null=True, blank=True)
-    is_published = models.BooleanField(default=False, blank=True)
+    description = models.TextField(max_length=1000, null=True)
+    is_published = models.BooleanField(default=False)
     image = models.ImageField(upload_to="ads/", null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = "Объявление"
@@ -29,3 +29,9 @@ class Ad(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Selection(models.Model):
+    name = models.CharField(max_length=20)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    items = models.ManyToManyField(Ad)
