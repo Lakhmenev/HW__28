@@ -120,7 +120,7 @@ class AdView(ListView):
             self.object_list = self.object_list.filter(price__lte=request.GET.get("price_to"))
 
         self.object_list = self.object_list.select_related('author').order_by("-price")
-        paginator = Paginator(self.object_list, settings.TOTAL_ON_PAGE)
+        paginator = Paginator(self.object_list, settings.REST_FRAMEWORK["PAGE_SIZE"])
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -155,13 +155,13 @@ class AdDetailView(RetrieveAPIView):
 @method_decorator(csrf_exempt, name='dispatch')
 class AdCreateView(CreateView):
     model = Ad
-    fields = ["name", "author", "price", "description", "category"]
+    fields = ["name", "author", "price", "description", "is_published", "category"]
 
     def post(self, request, *args, **kwargs):
         ad_data = json.loads(request.body)
 
-        author = get_object_or_404(User, id=ad_data["author_id"])
-        category = get_object_or_404(Category, id=ad_data["category_id"])
+        author = get_object_or_404(User, ad_data["author_id"])
+        category = get_object_or_404(Category, ad_data["category_id"])
 
         ad = Ad.objects.create(
             name=ad_data["name"],
